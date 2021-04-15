@@ -32,7 +32,7 @@ resource "aws_key_pair" "mob-key" {
 }
 
 resource "aws_instance" "mob-iac" {
-  ami = "ami-005452a3c1224762d"
+  ami = "ami-0fbc0724a0721c688"
   instance_type = "t2.large"
   associate_public_ip_address = true
   key_name = aws_key_pair.mob-key.key_name
@@ -54,6 +54,11 @@ resource "aws_instance" "mob-iac" {
 
   depends_on = [ aws_security_group.mob-sg ]
   get_password_data = "true"
+  user_data = <<EOF
+<powershell>
+        Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/approvals/ApprovalTests.java.StarterProject/master/install.windows.ps1 | Invoke-Expression
+</powershell>
+EOF
 }
 
 output "ec2instance" {
