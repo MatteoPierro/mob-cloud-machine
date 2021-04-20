@@ -58,6 +58,7 @@ resource "aws_instance" "mob-iac" {
 <powershell>
         Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/approvals/ApprovalTests.java.StarterProject/master/install.windows.ps1 | Invoke-Expression
         New-Item -Path 'C:\Users\Administrator\Desktop\DONE.txt' -ItemType File
+        Restart-Computer
 </powershell>
 EOF
 }
