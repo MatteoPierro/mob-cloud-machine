@@ -1,6 +1,6 @@
 provider "aws" {
-  profile    = "default"
-  region     = "eu-central-1"
+  profile = "default"
+  region  = "eu-central-1"
 }
 
 resource "aws_security_group" "mob-sg" {
@@ -8,17 +8,17 @@ resource "aws_security_group" "mob-sg" {
 
   // Open traffic from everywhere
   ingress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   lifecycle {
@@ -32,33 +32,33 @@ resource "aws_key_pair" "mob-key" {
 }
 
 resource "aws_instance" "mob-machines" {
-  ami = "ami-0fbc0724a0721c688"
-  count = 2
-  instance_type = "t2.large"
+  ami                         = "ami-0fbc0724a0721c688"
+  count                       = var.number_of_machines
+  instance_type               = "t2.large"
   associate_public_ip_address = true
-  key_name = aws_key_pair.mob-key.key_name
+  key_name                    = aws_key_pair.mob-key.key_name
 
   vpc_security_group_ids = [
     aws_security_group.mob-sg.id
   ]
- 
+
   root_block_device {
     delete_on_termination = true
-    volume_size = 150
-    volume_type = "gp2"
-  }
- 
-  tags = {
-    Name ="mob-server-${count.index}"
+    volume_size           = 150
+    volume_type           = "gp2"
   }
 
-  depends_on = [ aws_security_group.mob-sg ]
+  tags = {
+    Name = "mob-server-${count.index}"
+  }
+
+  depends_on        = [aws_security_group.mob-sg]
   get_password_data = "true"
-  user_data = <<EOF
+  user_data         = <<EOF
 <powershell>
-        Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/approvals/ApprovalTests.java.StarterProject/master/install.windows.ps1 | Invoke-Expression
+        iwr -useb https://raw.githubusercontent.com/JayBazuzi/machine-setup/main/dev_environments/java.ps1 | iex
         New-Item -Path 'C:\Users\Administrator\Desktop\DONE.txt' -ItemType File
-        Restart-Computer
+        Restart-Computer -Force
 </powershell>
 EOF
 }
