@@ -31,8 +31,9 @@ resource "aws_key_pair" "mob-key" {
   public_key = file("./keys/mob_key.pub")
 }
 
-resource "aws_instance" "mob-iac" {
+resource "aws_instance" "mob-machines" {
   ami = "ami-0fbc0724a0721c688"
+  count = 2
   instance_type = "t2.large"
   associate_public_ip_address = true
   key_name = aws_key_pair.mob-key.key_name
@@ -48,8 +49,7 @@ resource "aws_instance" "mob-iac" {
   }
  
   tags = {
-    Name ="MOB SERVER"
-    OS = "WINDOWS"
+    Name ="mob-server-${count.index}"
   }
 
   depends_on = [ aws_security_group.mob-sg ]
@@ -63,10 +63,6 @@ resource "aws_instance" "mob-iac" {
 EOF
 }
 
-output "ec2instance" {
-  value = aws_instance.mob-iac.public_ip
-}
-
-output "Administrator_Password" {
-  value = rsadecrypt(aws_instance.mob-iac.password_data, file("./keys/mob_key"))
+output "Machines" {
+  value = [for machine in aws_instance.mob-machines : "${machine.tags.Name} ${machine.public_ip} ${rsadecrypt(machine.password_data, file("./keys/mob_key"))}"]
 }
