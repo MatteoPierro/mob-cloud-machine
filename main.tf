@@ -58,6 +58,7 @@ resource "aws_instance" "mob-machines" {
 <powershell>
         iwr -useb https://raw.githubusercontent.com/JayBazuzi/machine-setup/main/dev_environments/java.ps1 | iex
         New-Item -Path 'C:\Users\Administrator\Desktop\DONE.txt' -ItemType File
+        echo xyz | anydesk --set-password
         Restart-Computer -Force
 </powershell>
 EOF
