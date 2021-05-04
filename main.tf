@@ -59,6 +59,16 @@ resource "aws_instance" "mob-machines" {
         iwr -useb https://raw.githubusercontent.com/JayBazuzi/machine-setup/main/dev_environments/java.ps1 | iex
         New-Item -Path 'C:\Users\Administrator\Desktop\DONE.txt' -ItemType File
         echo xyz | anydesk --set-password
+        # Create a Shortcut with Windows PowerShell
+        $SourceFileLocation = "C:\ProgramData\chocolatey\bin\AnyDesk.exe"
+        $ShortcutLocation = "C:\Users\Administrator\Desktop\AnyDesk.lnk"
+        #New-Object : Creates an instance of a Microsoft .NET Framework or COM object.
+        #-ComObject WScript.Shell: This creates an instance of the COM object that represents the WScript.Shell for invoke CreateShortCut
+        $WScriptShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutLocation)
+        $Shortcut.TargetPath = $SourceFileLocation
+        #Save the Shortcut to the TargetPath
+        $Shortcut.Save()
         Restart-Computer -Force
 </powershell>
 EOF
